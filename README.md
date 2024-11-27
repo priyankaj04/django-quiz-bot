@@ -7,7 +7,7 @@ This is a basic version of an interactive quiz bot that engages users in quizzes
 3. Enter `restart` to restart quiz.
 4. Once quiz is completed, user cannot answer again until they `restart`.
 
-Steps to run the project with Docker
+### Steps to run the project with Docker
 
 1. Install Docker and Docker Compose (https://docs.docker.com/compose/install/)
 2. Docker should be running
@@ -15,7 +15,7 @@ Steps to run the project with Docker
 4. Go to `localhost` to view the chatbot
 
 
-Steps to run the project without Docker
+### Steps to run the project without Docker
 
 1. Install required packages by running `pip install -r requirements.txt`
 2. Install and run postgresql, and change the `DATABASES` config in `settings.py`, if required.
