@@ -15,14 +15,18 @@ def generate_bot_responses(message, session):
         return [error]
 
     next_question, next_question_id = get_next_question(current_question_id, session)
+    answers = session.get("answers", {})
 
-    if next_question:
+    if next_question_id is not None:
         bot_responses.append(next_question)
-    else:
+        session["current_question_id"] = next_question_id
+    elif len(answers) == len(PYTHON_QUESTION_LIST):
         final_response = generate_final_response(session)
         bot_responses.append(final_response)
+        session["current_question_id"] = int(len(PYTHON_QUESTION_LIST)+1)
+    elif len(answers) > len(PYTHON_QUESTION_LIST):
+        bot_responses.append(next_question)
 
-    session["current_question_id"] = next_question_id
     session.save()
 
     return bot_responses
@@ -58,19 +62,22 @@ def get_next_question(current_question_id, session):
     '''
     Fetches the next question from the PYTHON_QUESTION_LIST based on the current_question_id.
     '''
+    answers = session.get("answers", {})
+    if len(answers) == len(PYTHON_QUESTION_LIST):
+        return "Quiz completed! Thank you for participating.", None
+
     if current_question_id is None:
         next_id = 0
     else:
         next_id = current_question_id + 1
 
     if next_id >= len(PYTHON_QUESTION_LIST):
-        return None, None
+        return "Quiz completed! Thank you for participating.", next_id
 
     question = PYTHON_QUESTION_LIST[next_id]
     formatted_question = f"{question.get('question_text')}\n\nOptions:\n"
     for option in question.get("options", []):
-        formatted_question += f"- {option}\n"
-
+        formatted_question += f"{option},\n"
     return formatted_question, next_id
 
 
