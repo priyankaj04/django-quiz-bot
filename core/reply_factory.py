@@ -6,6 +6,11 @@ def generate_bot_responses(message, session):
     bot_responses = []
 
     current_question_id = session.get("current_question_id")
+
+    if message == 'restart':
+        session["answers"] = {}
+        current_question_id = None
+
     if current_question_id is None:
         bot_responses.append(BOT_WELCOME_MESSAGE)
 
@@ -17,6 +22,7 @@ def generate_bot_responses(message, session):
     next_question, next_question_id = get_next_question(current_question_id, session)
     answers = session.get("answers", {})
 
+    print(session["current_question_id"],)
     if next_question_id is not None:
         bot_responses.append(next_question)
         session["current_question_id"] = next_question_id
@@ -24,11 +30,10 @@ def generate_bot_responses(message, session):
         final_response = generate_final_response(session)
         bot_responses.append(final_response)
         session["current_question_id"] = int(len(PYTHON_QUESTION_LIST)+1)
-    elif len(answers) > len(PYTHON_QUESTION_LIST):
+    elif session["current_question_id"] > len(PYTHON_QUESTION_LIST):
         bot_responses.append(next_question)
 
     session.save()
-
     return bot_responses
 
 
@@ -45,7 +50,7 @@ def record_current_answer(answer, current_question_id, session):
     answers = session.get("answers", {})
 
     if current_question_id >= len(PYTHON_QUESTION_LIST):
-        return False, "Invalid question ID"
+        return True, ""
 
     current_question = PYTHON_QUESTION_LIST[current_question_id]
 
