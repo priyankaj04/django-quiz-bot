@@ -5,9 +5,9 @@ from .constants import BOT_WELCOME_MESSAGE, PYTHON_QUESTION_LIST
 def generate_bot_responses(message, session):
     bot_responses = []
 
-    current_question_id = session.get("current_question_id")
+    current_question_id = session.get("current_question_id", None)
 
-    if message == 'restart':
+    if message.lower() == 'restart':
         session["answers"] = {}
         current_question_id = None
 
@@ -22,7 +22,6 @@ def generate_bot_responses(message, session):
     next_question, next_question_id = get_next_question(current_question_id, session)
     answers = session.get("answers", {})
 
-    print(session["current_question_id"],)
     if next_question_id is not None:
         bot_responses.append(next_question)
         session["current_question_id"] = next_question_id
@@ -113,5 +112,7 @@ def generate_final_response(session):
         response += "Good job! Keep practicing! 👍"
     else:
         response += "Keep learning and try again! 💪"
+
+    response += "Type 'restart' to restart the bot."
 
     return response
