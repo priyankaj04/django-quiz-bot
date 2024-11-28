@@ -2,10 +2,11 @@
 This is a basic version of an interactive quiz bot that engages users in quizzes, evaluates their responses, and provides a final score based on their answers. In this we use Django channels websocket communication, redis as message broker, and Django sessions for temporary data storage.
 
 ## Handling Cases
-1. `Validations` : Invalid option, No answer provided.
+1. ```Validations``` : Invalid option, No answer provided.
 2. Generate next question by based on `number of answers` & `current_qid` ( this approach because even if qid is updated, number of questioned answers list can never go wrong. It is just to keep track the number of answers).
 3. Enter `restart` to restart quiz.
 4. Once quiz is completed, user cannot answer again until they `restart`.
+5. ```Exception Handling```: Putting each function under try-catch block for exception handling (Best coding practises).
 
 ### Steps to run the project with Docker
 
@@ -22,3 +23,4 @@ This is a basic version of an interactive quiz bot that engages users in quizzes
 3. Install and run redis, and update the `CHANNEL_LAYERS` config in `settings.py`, if required.
 4. In the project root run `python manage.py runserver`
 4. Go to `127.0.0.1:8000` to view the chatbot
+5. 
