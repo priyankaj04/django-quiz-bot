@@ -40,49 +40,57 @@ def record_current_answer(answer, current_question_id, session):
     '''
     Validates and stores the answer for the current question to django session.
     '''
-    if current_question_id is None:
+    try:
+        if current_question_id is None:
+            return True, ""
+
+        if not answer:
+            return False, "Please provide an answer"
+
+        answers = session.get("answers", {})
+
+        if current_question_id >= len(PYTHON_QUESTION_LIST):
+            return True, ""
+
+        current_question = PYTHON_QUESTION_LIST[current_question_id]
+
+        if answer.lower() not in [opt.lower() for opt in current_question["options"]]:
+            return False, "Please select a valid option"
+
+        answers[current_question_id] = answer
+        session["answers"] = answers
+
         return True, ""
-
-    if not answer:
-        return False, "Please provide an answer"
-
-    answers = session.get("answers", {})
-
-    if current_question_id >= len(PYTHON_QUESTION_LIST):
-        return True, ""
-
-    current_question = PYTHON_QUESTION_LIST[current_question_id]
-
-    if answer.lower() not in [opt.lower() for opt in current_question["options"]]:
-        return False, "Please select a valid option"
-
-    answers[current_question_id] = answer
-    session["answers"] = answers
-
-    return True, ""
+    except Exception as e:
+        print("record_current_answer error:", str(e))
+        return False, f"Oops! Something went wrong"
 
 
 def get_next_question(current_question_id, session):
     '''
     Fetches the next question from the PYTHON_QUESTION_LIST based on the current_question_id.
     '''
-    answers = session.get("answers", {})
-    if len(answers) == len(PYTHON_QUESTION_LIST):
-        return "Quiz completed! Thank you for participating.", None
+    try:
+        answers = session.get("answers", {})
+        if len(answers) == len(PYTHON_QUESTION_LIST):
+            return "Quiz completed! Thank you for participating.", None
 
-    if current_question_id is None:
-        next_id = 0
-    else:
-        next_id = current_question_id + 1
+        if current_question_id is None:
+            next_id = 0
+        else:
+            next_id = current_question_id + 1
 
-    if next_id >= len(PYTHON_QUESTION_LIST):
-        return "Quiz completed! Thank you for participating.", next_id
+        if next_id >= len(PYTHON_QUESTION_LIST):
+            return "Quiz completed! Thank you for participating.", next_id
 
-    question = PYTHON_QUESTION_LIST[next_id]
-    formatted_question = f"{question.get('question_text')}\n\nOptions:\n"
-    for option in question.get("options", []):
-        formatted_question += f"{option},\n"
-    return formatted_question, next_id
+        question = PYTHON_QUESTION_LIST[next_id]
+        formatted_question = f"{question.get('question_text')}\n\nOptions:\n"
+        for option in question.get("options", []):
+            formatted_question += f"{option},\n"
+        return formatted_question, next_id
+    except Exception as e:
+        print("get_next_question error:", str(e))
+        return "Oops! something went wrong.", current_question_id
 
 
 def generate_final_response(session):
@@ -90,29 +98,33 @@ def generate_final_response(session):
     Creates a final result message including a score based on the answers
     by the user for questions in the PYTHON_QUESTION_LIST.
     '''
-    answers = session.get("answers", {})
-    correct_count = 0
+    try:
+        answers = session.get("answers", {})
+        correct_count = 0
 
-    for index, question in enumerate(PYTHON_QUESTION_LIST):
-        correct_answer = question.get("answer")
-        user_answer = answers.get(index)
-        if user_answer and user_answer.lower() == correct_answer.lower():
-            correct_count += 1
+        for index, question in enumerate(PYTHON_QUESTION_LIST):
+            correct_answer = question.get("answer")
+            user_answer = answers.get(index)
+            if user_answer and user_answer.lower() == correct_answer.lower():
+                correct_count += 1
 
-    total_questions = len(PYTHON_QUESTION_LIST)
-    score_percentage = (correct_count / total_questions) * 100
+        total_questions = len(PYTHON_QUESTION_LIST)
+        score_percentage = (correct_count / total_questions) * 100
 
-    response = f"Quiz completed!\n\n"
-    response += f"You answered {correct_count} out of {total_questions} questions correctly.\n"
-    response += f"Your score: {score_percentage:.1f}%\n\n"
+        response = f"Quiz completed!\n\n"
+        response += f"You answered {correct_count} out of {total_questions} questions correctly.\n"
+        response += f"Your score: {score_percentage:.1f}%\n\n"
 
-    if score_percentage >= 80:
-        response += "Excellent work! 🎉"
-    elif score_percentage >= 60:
-        response += "Good job! Keep practicing! 👍"
-    else:
-        response += "Keep learning and try again! 💪"
+        if score_percentage >= 80:
+            response += "Excellent work! 🎉"
+        elif score_percentage >= 60:
+            response += "Good job! Keep practicing! 👍"
+        else:
+            response += "Keep learning and try again! 💪"
 
-    response += "Type 'restart' to restart the bot."
+        response += "Type 'restart' to restart the bot."
 
-    return response
+        return response
+    except Exception as e:
+        print("generate_final_response error:", str(e))
+        return "Oops! something went wrong."
