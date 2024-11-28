@@ -50,4 +50,5 @@ These structured approaches enhance the quiz application's robustness, maintaina
 3. Install and run redis, and update the `CHANNEL_LAYERS` config in `settings.py`, if required.
 4. In the project root run `python manage.py runserver`
 4. Go to `127.0.0.1:8000` to view the chatbot
-5. 
+
+### Thankyou!
