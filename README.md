@@ -1,12 +1,39 @@
 # Quiz bot
 This is a basic version of an interactive quiz bot that engages users in quizzes, evaluates their responses, and provides a final score based on their answers. In this we use Django channels websocket communication, redis as message broker, and Django sessions for temporary data storage.
 
-## Handling Cases
-1. ```Validations``` : Invalid option, No answer provided.
-2. Generate next question by based on `number of answers` & `current_qid` ( this approach because even if qid is updated, number of questioned answers list can never go wrong. It is just to keep track the number of answers).
-3. Enter `restart` to restart quiz.
-4. Once quiz is completed, user cannot answer again until they `restart`.
-5. ```Exception Handling```: Putting each function under try-catch block for exception handling (Best coding practises).
+## Handling Scenarios in the Quiz Application
+1. Validations:
+
+  * Ensures users provide valid input by handling cases like:
+    * `Invalid options`: If the selected option is not among the provided choices.
+    * `No answer provided`: If the user submits an empty response.
+
+2. Next Question Logic:
+
+  * Determines the next question based on:
+    * `The number of answers recorded so far`: This ensures that the sequence is always accurate, even if the question ID is updated.
+    * `The current question ID`: Tracks the user's progress through the quiz seamlessly.
+ * This approach guarantees the quiz flow remains consistent and error-free.
+   
+3. Restart Functionality:
+
+  * Users can type `restart` at any point to reset the quiz.
+  * Once the quiz is completed, users are restricted from answering further until they explicitly restart.
+
+4. Completion Handling:
+
+  * Prevents users from submitting answers after the quiz has ended.
+  * Provides a clear summary of results and prompts users to restart if they wish to retake the quiz.
+
+5. Exception Handling:
+
+  * Implements robust `try-catch blocks` in every function to ensure errors are handled gracefully.
+  * Adheres to best coding practices by:
+    * Printing error messages in terminal for easier debugging.
+    * Avoiding application crashes due to unexpected input or system issues.
+  * This ensures a smooth and reliable user experience.
+
+These structured approaches enhance the quiz application's robustness, maintainability, and user-friendliness, making it a scalable solution.
 
 ### Steps to run the project with Docker
 
